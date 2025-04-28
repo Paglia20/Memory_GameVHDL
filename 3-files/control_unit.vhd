@@ -4,7 +4,8 @@ use ieee.numeric_std.all;
 
 entity control_unit is
   generic (
-    DELAY_CYCLES : integer := 100000000
+    DELAY_CYCLES : integer := 100000000;
+    blink_value : integer := 6
   );
   port (
     clk                : in  std_logic;
@@ -37,7 +38,7 @@ architecture Behavioral of control_unit is
   signal next_state         : state_type;
   signal level_reg          : std_logic_vector(1 downto 0) := "00";
   signal delay_counter      : integer range 0 to DELAY_CYCLES := 0;
-  signal blink_counter      : integer range 0 to 6 := 0;
+  signal blink_counter      : integer range 0 to blink_value := 0;
   signal ones_count_reg     : std_logic_vector(3 downto 0) := (others => '0');
   signal level_up_reg       : std_logic := '0';
   signal repeat_level_reg   : std_logic := '0';
@@ -100,7 +101,7 @@ begin
 
       -- Blink counter
       if state = blink_all then
-        if blink_counter < 6 then
+        if blink_counter < blink_value then
           blink_counter <= blink_counter + 1;
         end if;
       else
@@ -115,7 +116,7 @@ begin
       end if;
 
       -- Update ones_count
-      if state = generate_pattern then
+      if state = blink_all then
         if level_reg = "00" then
           ones_count_reg <= "0110"; -- 6
         else
@@ -141,7 +142,7 @@ begin
 
       when blink_all =>
         led_mode <= "01";
-        if blink_counter = 6 then
+        if blink_counter = blink_value then
           next_state <= generate_pattern;
         end if;
 

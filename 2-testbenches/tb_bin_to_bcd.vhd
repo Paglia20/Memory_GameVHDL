@@ -14,7 +14,7 @@ ARCHITECTURE behavior OF tb_binary_to_bcd IS
     );
     PORT (
       clk     : IN  STD_LOGIC;
-      reset_n : IN  STD_LOGIC;
+      reset   : IN  STD_LOGIC; -- cambiato reset_n -> reset
       ena     : IN  STD_LOGIC;
       binary  : IN  STD_LOGIC_VECTOR(bits - 1 DOWNTO 0);
       bcd     : OUT STD_LOGIC_VECTOR(digits * 4 - 1 DOWNTO 0);
@@ -24,7 +24,7 @@ ARCHITECTURE behavior OF tb_binary_to_bcd IS
 
   -- Clock
   SIGNAL clk        : STD_LOGIC := '0';
-  SIGNAL reset_n    : STD_LOGIC := '0';
+  SIGNAL reset      : STD_LOGIC := '0'; -- cambiato reset_n -> reset
 
   -- Lvl
   SIGNAL level_ena      : STD_LOGIC := '0';
@@ -62,7 +62,7 @@ BEGIN
     )
     PORT MAP (
       clk     => clk,
-      reset_n => reset_n,
+      reset   => reset,
       ena     => level_ena,
       binary  => level_binary,
       bcd     => level_bcd,
@@ -77,7 +77,7 @@ BEGIN
     )
     PORT MAP (
       clk     => clk,
-      reset_n => reset_n,
+      reset   => reset,
       ena     => score_ena,
       binary  => score_binary,
       bcd     => score_bcd,
@@ -88,15 +88,14 @@ BEGIN
   stim_proc: PROCESS
   BEGIN
     -- Reset
-    reset_n <= '0';
+    reset <= '1';
     WAIT FOR 100 ns;
-    reset_n <= '1';
-    WAIT FOR 50 ns; -- solo dopo diamo input e abilitiamo
-
+    reset <= '0';
+    WAIT FOR 50 ns;
 
     -- livello = 1, punteggio = 9
-    level_binary  <= "0001";  -- livello 1
-    score_binary  <= "1001";  -- punteggio 9
+    level_binary  <= "0001";  
+    score_binary  <= "1001";  
 
     -- Attiva entrambi
     level_ena <= '1';
@@ -105,11 +104,10 @@ BEGIN
     level_ena <= '0';
     score_ena <= '0';
 
-    -- Aspetta che entrambi abbiano finito
+    -- Aspetta che abbiano finito
     WAIT UNTIL level_busy = '0' AND score_busy = '0';
     WAIT FOR 100 ns;
 
-    -- Fine simulazione
     WAIT;
   END PROCESS;
 

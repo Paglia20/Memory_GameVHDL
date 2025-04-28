@@ -3,6 +3,12 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity main is
+  generic (
+    main_counter_size : integer := 12;
+    main_DELAY_CYCLES : integer := 100000000;
+    main_blink_value : integer := 100000000
+  );
+
   port (
     clock : in std_logic;
     reset : in std_logic;
@@ -10,9 +16,7 @@ entity main is
     btn_center : in std_logic;
     led : out std_logic_vector(15 downto 0);
     an : out std_logic_vector(3 downto 0);
-    ca : out std_logic_vector(7 downto 0);
-
-    state_out          : out std_logic_vector(4 downto 0) -- For debugging
+    ca : out std_logic_vector(7 downto 0)
   );
 end entity main;
 
@@ -38,16 +42,13 @@ architecture Behavioral of main is
   signal bcd_score   : std_logic_vector(7 downto 0);
   signal bcd_level   : std_logic_vector(7 downto 0);
 
-  -- Reset inverted and switches down
-  signal reset_n_s : std_logic;
+  -- All switches down
   signal all_switches_down_s : std_logic;
 
   -- Extended level
   signal extended_level : std_logic_vector(3 downto 0);
 
 begin
-
-  reset_n_s <= not reset;
 
   all_switches_down_s <= not (switches(0) or switches(1) or switches(2) or switches(3) or 
                               switches(4) or switches(5) or switches(6) or switches(7) or 
@@ -58,7 +59,7 @@ begin
 
   -- Debouncer
   debouncer_inst : entity work.debouncer
-    generic map (counter_size => 2) -- normally 12
+    generic map (counter_size => main_counter_size)
     port map (
       clock => clock,
       reset => reset,
@@ -94,6 +95,10 @@ begin
 
   -- Control Unit
   control_unit_inst : entity work.control_unit
+    generic map (
+      DELAY_CYCLES => main_DELAY_CYCLES,
+      blink_value  => main_blink_value
+    )
     port map (
       clk => clock,
       reset => reset,
@@ -116,8 +121,8 @@ begin
     generic map (bits => 4, digits => 2)
     port map (
       clk => clock,
-      reset_n => reset_n_s,
-      ena => '1',
+      reset => reset,
+      ena => score_valid,
       binary => score,
       busy => busy_score,
       bcd => bcd_score
@@ -128,8 +133,8 @@ begin
     generic map (bits => 4, digits => 2)
     port map (
       clk => clock,
-      reset_n => reset_n_s,
-      ena => '1',
+      reset => reset,
+      ena => score_valid,
       binary => extended_level,
       busy => busy_level,
       bcd => bcd_level
@@ -151,10 +156,8 @@ begin
 
   -- LED control
   led <= 
-    (others => '0') when led_mode = "00" else -- off
-    pattern when led_mode = "10" else -- show pattern
-    (others => '1'); -- blink
-
-  state_out <= state_out_s;
+    (others => '0') when led_mode = "00" else
+    pattern when led_mode = "10" else
+    (others => '1');
 
 end Behavioral;

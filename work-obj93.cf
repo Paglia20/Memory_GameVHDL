@@ -1,28 +1,31 @@
 v 4
-file . "4-unfinished/main.vhd" "57ab2cd05b6950450aa39468ef1edeef4ec757a3" "20250427152423.509":
-  entity main at 1( 0) + 0 on 277;
-  architecture behavioral of main at 19( 456) + 0 on 278;
-file . "3-files/seven_segment_driver.vhd" "510dab437bb92232b90a1c22ab0f6ba21dafc927" "20250427152423.345":
-  entity seven_segment_driver at 1( 0) + 0 on 275;
-  architecture behavioral of seven_segment_driver at 21( 512) + 0 on 276;
-file . "3-files/binary_to_bcd_digit.vhd" "0bf1cc7a7aebe876bed66f08d6f6ab20486c5070" "20250427152422.699":
-  entity binary_to_bcd_digit at 1( 0) + 0 on 265;
-  architecture behavior of binary_to_bcd_digit at 16( 486) + 0 on 266;
-file . "3-files/datapath.vhd" "ffbc28aebe3d167248a9fd8c603fd6d48e8302a1" "20250427152422.954":
-  entity datapath at 1( 0) + 0 on 269;
-  architecture behavioral of datapath at 20( 636) + 0 on 270;
-file . "3-files/debouncer.vhd" "2f6d02b9dfd96cc07457bff478b9b3666cbd8a81" "20250427152423.090":
-  entity debouncer at 1( 0) + 0 on 271;
-  architecture behavioral of debouncer at 17( 278) + 0 on 272;
-file . "3-files/pattern_generator.vhd" "70ac7b515c7fea47929a0a607f4c4aae048e0377" "20250427152423.188":
-  entity pattern_generator at 1( 0) + 0 on 273;
-  architecture behavioral of pattern_generator at 20( 758) + 0 on 274;
-file . "3-files/control_unit.vhd" "8ce7d13bcbcda5deed46818426e6250fc0937284" "20250427152422.788":
-  entity control_unit at 1( 0) + 0 on 267;
-  architecture behavioral of control_unit at 27( 870) + 0 on 268;
-file . "3-files/binary_to_bcd.vhd" "6ea5cc24d4fe224b8e8e8b006119051d67da3842" "20250427152422.422":
-  entity binary_to_bcd at 1( 0) + 0 on 263;
-  architecture logic of binary_to_bcd at 17( 783) + 0 on 264;
-file . "4-unfinished/tb_main.vhd" "fb87a56af16d6f71d7fa68262d0fce01f1f04150" "20250427152423.676":
-  entity tb_main at 1( 0) + 0 on 279;
-  architecture behavior of tb_main at 8( 102) + 0 on 280;
+file . "2-testbenches/tb_bin_to_bcd.vhd" "eb430fc14e177a9e2080c88a01a5d8ef7283b5e8" "20250427200809.644":
+  entity tb_binary_to_bcd at 1( 0) + 0 on 321;
+  architecture behavior of tb_binary_to_bcd at 8( 120) + 0 on 322;
+file . "4-unfinished/tb_main.vhd" "a04a769989822deeaf90dd7b99fce1d671a7a573" "20250428193611.373":
+  entity tb_main at 3( 36) + 0 on 593;
+  architecture behavior of tb_main at 10( 137) + 0 on 594;
+file . "3-files/binary_to_bcd.vhd" "fe79ec2a3c9af93cccbf903afa620cadcc30a72f" "20250428193610.069":
+  entity binary_to_bcd at 1( 0) + 0 on 577;
+  architecture logic of binary_to_bcd at 17( 403) + 0 on 578;
+file . "3-files/control_unit.vhd" "9849d1747d7fb6341caa25dfbd29fe701df18a09" "20250428193610.446":
+  entity control_unit at 1( 0) + 0 on 581;
+  architecture behavioral of control_unit at 28( 902) + 0 on 582;
+file . "3-files/pattern_generator.vhd" "70ac7b515c7fea47929a0a607f4c4aae048e0377" "20250428193610.872":
+  entity pattern_generator at 1( 0) + 0 on 587;
+  architecture behavioral of pattern_generator at 20( 758) + 0 on 588;
+file . "3-files/debouncer.vhd" "2f6d02b9dfd96cc07457bff478b9b3666cbd8a81" "20250428193610.764":
+  entity debouncer at 1( 0) + 0 on 585;
+  architecture behavioral of debouncer at 17( 278) + 0 on 586;
+file . "3-files/datapath.vhd" "ffbc28aebe3d167248a9fd8c603fd6d48e8302a1" "20250428193610.620":
+  entity datapath at 1( 0) + 0 on 583;
+  architecture behavioral of datapath at 20( 636) + 0 on 584;
+file . "3-files/binary_to_bcd_digit.vhd" "04c940744b391bb9cb28ce644eb82d31e1d167ee" "20250428193610.351":
+  entity binary_to_bcd_digit at 1( 0) + 0 on 579;
+  architecture behavior of binary_to_bcd_digit at 16( 401) + 0 on 580;
+file . "3-files/seven_segment_driver.vhd" "510dab437bb92232b90a1c22ab0f6ba21dafc927" "20250428193611.034":
+  entity seven_segment_driver at 1( 0) + 0 on 589;
+  architecture behavioral of seven_segment_driver at 21( 512) + 0 on 590;
+file . "4-unfinished/main.vhd" "2374cb5fd0f19eacc945b7c97f2283f092207916" "20250428193611.207":
+  entity main at 1( 0) + 0 on 591;
+  architecture behavioral of main at 23( 526) + 0 on 592;
