@@ -89,7 +89,22 @@ begin
 
     switches <= (others => '0');
 
+    -- second level
+    wait for 500 ns;
+    switches <= "1000110001010100";
+    wait for 200 ns;
+
+    btn_center <= '1';
+    wait for 300 ns;
+    btn_center <= '0';
+
+    wait for 100 ns;
+
+    switches <= (others => '0');
+
     wait;
+
+
   end process;
 
     -- Timeout per evitare loop infiniti

@@ -48,7 +48,17 @@ architecture Behavioral of main is
   -- Extended level
   signal extended_level : std_logic_vector(3 downto 0);
 
+  signal reset_sync : std_logic;
+
+
+  signal score_valid_prev : std_logic := '0';
+  signal bcd_score_ena : std_logic := '0';
+  signal bcd_level_ena : std_logic := '0';
+
 begin
+  
+
+  reset_sync <=  reset; 
 
   all_switches_down_s <= not (switches(0) or switches(1) or switches(2) or switches(3) or 
                               switches(4) or switches(5) or switches(6) or switches(7) or 
@@ -57,12 +67,28 @@ begin
 
   extended_level <= "00" & level;
 
+
+process(clock)
+begin
+  if rising_edge(clock) then
+    score_valid_prev <= score_valid;
+    
+    if score_valid = '1' and score_valid_prev = '0' then
+      bcd_score_ena <= '1';
+      bcd_level_ena <= '1';
+    else
+      bcd_score_ena <= '0';
+      bcd_level_ena <= '0';
+    end if;
+  end if;
+end process;
+
   -- Debouncer
   debouncer_inst : entity work.debouncer
     generic map (counter_size => main_counter_size)
     port map (
       clock => clock,
-      reset => reset,
+      reset => reset_sync,
       bouncy => btn_center,
       pulse => pulse_center
     );
@@ -71,7 +97,7 @@ begin
   pattern_generator_inst : entity work.pattern_generator
     port map (
       clk => clock,
-      reset => reset,
+      reset => reset_sync,
       enable => enable_patt,
       ones_count => ones_count,
       pattern => pattern,
@@ -82,7 +108,7 @@ begin
   datapath_inst : entity work.datapath
     port map (
       clk => clock,
-      reset => reset,
+      reset => reset_sync,
       start_compare => start_compare,
       level => level,
       pattern_in => pattern,
@@ -101,7 +127,7 @@ begin
     )
     port map (
       clk => clock,
-      reset => reset,
+      reset => reset_sync,
       center_btn => pulse_center,
       done_patt => done_patt,
       score_valid => score_valid,
@@ -121,8 +147,8 @@ begin
     generic map (bits => 4, digits => 2)
     port map (
       clk => clock,
-      reset => reset,
-      ena => score_valid,
+      reset => reset_sync,
+      ena => bcd_score_ena,
       binary => score,
       busy => busy_score,
       bcd => bcd_score
@@ -133,8 +159,8 @@ begin
     generic map (bits => 4, digits => 2)
     port map (
       clk => clock,
-      reset => reset,
-      ena => score_valid,
+      reset => reset_sync,
+      ena => bcd_level_ena,
       binary => extended_level,
       busy => busy_level,
       bcd => bcd_level
@@ -145,7 +171,7 @@ begin
     generic map (size => 20)
     port map (
       clock => clock,
-      reset => reset,
+      reset => reset_sync,
       digit0 => bcd_score(3 downto 0),
       digit1 => bcd_score(7 downto 4),
       digit2 => bcd_level(3 downto 0),

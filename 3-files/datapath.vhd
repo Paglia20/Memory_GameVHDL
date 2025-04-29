@@ -34,6 +34,8 @@ architecture Behavioral of datapath is
 begin
 
   process(clk, reset)
+  variable new_score : integer range -16 to 32;
+
   begin
     if reset = '1' then
       state        <= idle;
@@ -59,7 +61,7 @@ begin
             switches_reg <= switches;
             bit_index    <= 0;
             temp_score   <= 0;
-            score_reg    <= 0;
+           -- score_reg    <= 0;
             state        <= compare;
           end if;
 
@@ -79,24 +81,26 @@ begin
             bit_index <= bit_index + 1;
           end if;
 
-        when done =>
-          -- clamp e update
-          if temp_score < 0 then
-            score_reg <= 0;
-            level_up_int <= '0';
-            repeat_level_int <= '1';
-          elsif temp_score >= 16 then
-            score_reg <= 15;
-            level_up_int <= '1';
-            repeat_level_int <= '0';
-          else
-            score_reg <= temp_score;
-            level_up_int <= '0';
-            repeat_level_int <= '1';
-          end if;
+          when done =>
+            new_score := score_reg + temp_score;
 
-          score_valid_int <= '1';
-          state <= idle;
+            -- clamp e aggiornamento
+            if new_score < 0 then
+              score_reg <= 0;
+              level_up_int <= '0';
+              repeat_level_int <= '1';
+            elsif new_score >= 16 then
+              score_reg <= 15;
+              level_up_int <= '1';
+              repeat_level_int <= '0';
+            else
+              score_reg <= new_score;
+              level_up_int <= '0';
+              repeat_level_int <= '1';
+            end if;
+
+            score_valid_int <= '1';
+            state <= idle;
       end case;
     end if;
   end process;

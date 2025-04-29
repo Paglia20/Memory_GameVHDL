@@ -1,82 +1,69 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
-ENTITY binary_to_bcd IS
-  GENERIC(
-    bits   : INTEGER := 10;
-    digits : INTEGER := 3);
-  PORT(
-    clk     : IN    STD_LOGIC;
-    reset   : IN    STD_LOGIC; 
-    ena     : IN    STD_LOGIC;
-    binary  : IN    STD_LOGIC_VECTOR(bits-1 DOWNTO 0);
-    busy    : OUT   STD_LOGIC;
-    bcd     : OUT   STD_LOGIC_VECTOR(digits*4-1 DOWNTO 0));
-END binary_to_bcd;
+entity binary_to_bcd is
+  generic (
+    bits   : integer := 8;
+    digits : integer := 3
+  );
+  port (
+    clk     : in  std_logic;
+    reset   : in  std_logic;
+    ena     : in  std_logic;
+    binary  : in  std_logic_vector(bits-1 downto 0);
+    busy    : out std_logic;
+    bcd     : out std_logic_vector(digits*4-1 downto 0)
+  );
+end entity;
 
-ARCHITECTURE logic OF binary_to_bcd IS
-  TYPE machine IS (idle, convert);
-  SIGNAL state            : machine;
-  SIGNAL binary_reg       : STD_LOGIC_VECTOR(bits-1 DOWNTO 0);
-  SIGNAL bcd_reg          : STD_LOGIC_VECTOR(digits*4-1 DOWNTO 0);
-  SIGNAL converter_ena    : STD_LOGIC;
-  SIGNAL converter_inputs : STD_LOGIC_VECTOR(digits DOWNTO 0);
+architecture Behavioral of binary_to_bcd is
+  type state_type is (idle, convert);
+  signal state       : state_type := idle;
+  signal binary_reg  : std_logic_vector(bits-1 downto 0);
+  signal bcd_reg     : std_logic_vector(digits*4-1 downto 0);
+  signal bit_count   : integer range 0 to bits := 0;
+begin
 
-  COMPONENT binary_to_bcd_digit IS
-    PORT(
-      clk     : IN      STD_LOGIC;
-      reset   : IN      STD_LOGIC; -- cambiato reset_n -> reset
-      ena     : IN      STD_LOGIC;
-      binary  : IN      STD_LOGIC;
-      c_out   : BUFFER  STD_LOGIC;
-      bcd     : BUFFER  STD_LOGIC_VECTOR(3 DOWNTO 0));
-  END COMPONENT;
-
-BEGIN
-
-  PROCESS(reset, clk)
-    VARIABLE bit_count : INTEGER RANGE 0 TO bits+1 := 0;
-  BEGIN
-    IF (reset = '1') THEN
-      bit_count := 0;
-      busy <= '1';
-      converter_ena <= '0';
-      bcd <= (OTHERS => '0');
+  process(clk, reset)
+  begin
+    if reset = '1' then
       state <= idle;
-    ELSIF (clk'EVENT AND clk = '1') THEN
-      CASE state IS
-        WHEN idle =>
-          IF (ena = '1') THEN
-            busy <= '1';
-            converter_ena <= '1';
+      binary_reg <= (others => '0');
+      bcd_reg <= (others => '0');
+      bit_count <= 0;
+      busy <= '0';
+      bcd <= (others => '0');
+    elsif rising_edge(clk) then
+      case state is
+        when idle =>
+          busy <= '0';
+          if ena = '1' then
             binary_reg <= binary;
-            bit_count := 0;
+            bcd_reg <= (others => '0');
+            bit_count <= 0;
             state <= convert;
-          ELSE
-            busy <= '0';
-            converter_ena <= '0';
+            busy <= '1';
+          end if;
+
+        when convert =>
+          for i in 0 to digits-1 loop
+            if unsigned(bcd_reg(i*4+3 downto i*4)) >= 5 then
+              bcd_reg(i*4+3 downto i*4) <= std_logic_vector(unsigned(bcd_reg(i*4+3 downto i*4)) + 3);
+            end if;
+          end loop;
+
+          bcd_reg <= bcd_reg(digits*4-2 downto 0) & binary_reg(bits-1);
+          binary_reg <= binary_reg(bits-2 downto 0) & '0';
+
+          bit_count <= bit_count + 1;
+          if bit_count = bits-1 then
             state <= idle;
-          END IF;
-
-        WHEN convert =>
-          IF (bit_count < bits+1) THEN
-            bit_count := bit_count + 1;
-            converter_inputs(0) <= binary_reg(bits-1);
-            binary_reg <= binary_reg(bits-2 DOWNTO 0) & '0';
-            state <= convert;
-          ELSE
             busy <= '0';
-            converter_ena <= '0';
-            bcd <= bcd_reg;
-            state <= idle;
-          END IF;
-      END CASE;
-    END IF;
-  END PROCESS;
+            bcd <= bcd_reg(digits*4-2 downto 0) & binary_reg(bits-1);
+          end if;
+      end case;
+    end if;
+  end process;
 
-  bcd_digits: FOR i IN 1 TO digits GENERATE
-    digit_0: binary_to_bcd_digit
-      PORT MAP (clk, reset, converter_ena, converter_inputs(i-1), converter_inputs(i), bcd_reg(i*4-1 DOWNTO i*4-4));
-  END GENERATE;
-
-END logic;
+end Behavioral;
