@@ -1,0 +1,2 @@
+0) fixa blink 
+1) rendi random
