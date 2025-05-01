@@ -31,7 +31,7 @@ architecture Behavioral of control_unit is
     idle, blink_all, generate_pattern, wait_pattern_done,
     show_pattern_once, wait_for_btn_eval, show_pattern_again,
     wait_score, wait_switches_down, delay_after_clear,
-    check_score, next_level
+    check_score, next_level, end_state
   );
 
   signal state              : state_type := idle;
@@ -191,7 +191,9 @@ begin
         end if;
 
       when check_score =>
-          if level_up_reg = '1' then
+         if level_reg = "10" and level_up_reg = '1' then
+           next_state <= end_state;
+          elsif level_up_reg = '1' then
             next_state <= next_level;
           elsif repeat_level_reg = '1' then
             next_state <= generate_pattern;
@@ -199,6 +201,9 @@ begin
 
       when next_level =>
         next_state <= blink_all;
+        
+      when end_state =>
+       led_mode <= "01";
     end case;
   end process;
 

@@ -92,6 +92,7 @@ begin
             elsif new_score >= 16 then
               score_reg <= 15;
               level_up_int <= '1';
+              score_reg    <= 0;
               repeat_level_int <= '0';
             else
               score_reg <= new_score;

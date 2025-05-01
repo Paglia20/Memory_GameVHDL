@@ -52,8 +52,11 @@ architecture Behavioral of main is
 
 
   signal score_valid_prev : std_logic := '0';
+  signal level_up_prev : std_logic := '0';
+
   signal bcd_score_ena : std_logic := '0';
   signal bcd_level_ena : std_logic := '0';
+  signal bcd_level_pending:std_logic := '0';
 
 begin
   
@@ -72,13 +75,29 @@ process(clock)
 begin
   if rising_edge(clock) then
     score_valid_prev <= score_valid;
+    level_up_prev <= level_up;
+
+    -- fronte di salita di level_up
+    if level_up = '1' and level_up_prev = '0' then
+      if busy_level = '0' then
+        bcd_level_ena <= '1';
+        bcd_level_pending <= '0';
+      else
+        bcd_level_ena <= '0';
+        bcd_level_pending <= '1';
+      end if;
+    elsif bcd_level_pending = '1' and busy_level = '0' then
+      bcd_level_ena <= '1';
+      bcd_level_pending <= '0';
+    else
+      bcd_level_ena <= '0';
+    end if;
+
     
     if score_valid = '1' and score_valid_prev = '0' then
       bcd_score_ena <= '1';
-      bcd_level_ena <= '1';
     else
       bcd_score_ena <= '0';
-      bcd_level_ena <= '0';
     end if;
   end if;
 end process;
