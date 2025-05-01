@@ -46,7 +46,9 @@ architecture Behavioral of main is
   signal all_switches_down_s : std_logic;
 
   -- Extended level
-  signal extended_level : std_logic_vector(3 downto 0);
+  signal extended_level_delayed : std_logic_vector(3 downto 0);
+  signal level_delayed : std_logic_vector(1 downto 0) := "00";
+
 
   signal reset_sync : std_logic;
 
@@ -56,7 +58,6 @@ architecture Behavioral of main is
 
   signal bcd_score_ena : std_logic := '0';
   signal bcd_level_ena : std_logic := '0';
-  signal bcd_level_pending:std_logic := '0';
 
 begin
   
@@ -68,7 +69,7 @@ begin
                               switches(8) or switches(9) or switches(10) or switches(11) or
                               switches(12) or switches(13) or switches(14) or switches(15));
 
-  extended_level <= "00" & level;
+  extended_level_delayed <= "00" & level_delayed;
 
 
 process(clock)
@@ -76,23 +77,8 @@ begin
   if rising_edge(clock) then
     score_valid_prev <= score_valid;
     level_up_prev <= level_up;
-
-    -- fronte di salita di level_up
-    if level_up = '1' and level_up_prev = '0' then
-      if busy_level = '0' then
-        bcd_level_ena <= '1';
-        bcd_level_pending <= '0';
-      else
-        bcd_level_ena <= '0';
-        bcd_level_pending <= '1';
-      end if;
-    elsif bcd_level_pending = '1' and busy_level = '0' then
-      bcd_level_ena <= '1';
-      bcd_level_pending <= '0';
-    else
-      bcd_level_ena <= '0';
-    end if;
-
+    
+    bcd_level_ena <= not busy_level;
     
     if score_valid = '1' and score_valid_prev = '0' then
       bcd_score_ena <= '1';
@@ -100,6 +86,9 @@ begin
       bcd_score_ena <= '0';
     end if;
   end if;
+  
+  
+  level_delayed <= level;
 end process;
 
   -- Debouncer
@@ -180,7 +169,7 @@ end process;
       clk => clock,
       reset => reset_sync,
       ena => bcd_level_ena,
-      binary => extended_level,
+      binary => extended_level_delayed,
       busy => busy_level,
       bcd => bcd_level
     );
