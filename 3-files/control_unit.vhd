@@ -123,8 +123,10 @@ begin
       if state = menu_actions then
         if up_btn = '1' then
           show_pattern_flag <= '1';
+          show_turns_flag   <= '0';
         elsif down_btn = '1' then
           show_turns_flag <= '1';
+          show_pattern_flag <= '0';
         elsif right_btn = '1' then
           show_pattern_flag <= '0';
           show_turns_flag   <= '0';
@@ -201,12 +203,13 @@ begin
         end if;
 
       when menu_actions =>
+        led_mode <= "00";
+
         if show_pattern_flag = '1' then
           led_mode <= "01";
-        elsif show_turns_flag = '1' then
+        end if;
+        if show_turns_flag = '1' then
           turns_enable <= '1';
-        else
-          led_mode <= "00";
         end if;
        
         if right_btn = '1' then
