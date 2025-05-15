@@ -84,6 +84,11 @@ architecture Behavioral of main is
   signal bcd_timer_ena : std_logic := '0';
 
   signal wave_pattern : std_logic_vector(15 downto 0) := "0000000000001111";
+  signal wave_counter : integer range 0 to 10000000 := 0; 
+  
+  
+  signal left_btn_hold      : integer range 0 to main_DELAY_CYCLES := 0;
+
 
 begin
 
@@ -114,15 +119,34 @@ begin
     else
       bcd_score_ena <= '0';
     end if;
+    
+    
+    --left btn
+    if btn_left = '1' then
+       if left_btn_hold < main_DELAY_CYCLES then
+          left_btn_hold <= left_btn_hold + 1;
+       else 
+       res_n <= '1';
+       end if;
+    else
+       left_btn_hold <= 0;
+       res_n <= '0';
+    end if;
 
 
     if led_mode = "11" then
-      -- Rotate left by 1
-      wave_pattern <= wave_pattern(14 downto 0) & wave_pattern(15);
-    else
-      wave_pattern <= "0000000000001111"; -- reset when not in win state
+      if wave_counter = 10000000 then 
+          wave_counter <= 0;
+          -- Rotate left by 1
+          wave_pattern <= wave_pattern(14 downto 0) & wave_pattern(15);
+      else
+          wave_counter <= wave_counter + 1;
+      end if;
+      else
+          wave_counter <= 0;
+          wave_pattern <= "0000000000001111"; -- reset when not in win state
+      end if;
     end if;
-  end if;
 
 
 end process;

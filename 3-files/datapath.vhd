@@ -145,7 +145,11 @@ begin
         end if;
           
       else
+        if level = "011" then 
         timer_reg <= 10;         -- reset when disabled
+        else 
+        timer_reg <= 5;
+        end if;
         delay_counter <= 0;
         timer_expired_int <= '0';
       end if;

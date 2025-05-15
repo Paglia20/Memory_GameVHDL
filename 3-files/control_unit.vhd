@@ -50,7 +50,6 @@ architecture Behavioral of control_unit is
   signal switches_down_reg  : std_logic := '0';
   signal score_valid_reg    : std_logic := '0';
   signal turn_count         : integer range 0 to 15 := 0;
-  signal left_btn_hold      : integer range 0 to DELAY_CYCLES := 0;
   signal show_pattern_flag  : std_logic := '0';
   signal show_turns_flag    : std_logic := '0';
 
@@ -58,7 +57,7 @@ begin
 
   process(clk, reset)
   begin
-    if reset = '1' or left_btn_hold >= DELAY_CYCLES then
+    if reset = '1' then
       report "resetting!" severity note; 
       state             <= idle;
       level_reg         <= (others => '0');
@@ -69,7 +68,6 @@ begin
       switches_down_reg <= '0';
       score_valid_reg   <= '0';
       turn_count        <= 0;
-      left_btn_hold     <= 0;
       show_pattern_flag <= '0';
       show_turns_flag   <= '0';
 
@@ -123,14 +121,6 @@ begin
       end if;
 
       if state = menu_actions then
-        if left_btn = '1' then
-          if left_btn_hold < DELAY_CYCLES then
-            left_btn_hold <= left_btn_hold + 1;
-          end if;
-        else
-          left_btn_hold <= 0;
-        end if;
-
         if up_btn = '1' then
           show_pattern_flag <= '1';
         elsif down_btn = '1' then
@@ -149,7 +139,7 @@ begin
 
   process(state, center_btn, done_patt, score_valid_reg, level_up_reg,
           switches_down_reg, delay_counter, repeat_level_reg,
-          right_btn, left_btn_hold, show_pattern_flag, show_turns_flag)
+          right_btn, show_pattern_flag, show_turns_flag)
   begin
     next_state     <= state;
     enable_patt    <= '0';
@@ -218,11 +208,8 @@ begin
         else
           led_mode <= "00";
         end if;
-
-        if left_btn_hold >= DELAY_CYCLES then
-          next_state <= idle;
-
-        elsif right_btn = '1' then
+       
+        if right_btn = '1' then
           next_state <= delay_after_clear;
         end if;
 
