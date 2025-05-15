@@ -1,6 +1,6 @@
 0) fixa blink 
 1) rendi random
 
-giovanni-ub@giovanni-on-ub:~/Desktop$ cd Vivado/2024.2/bin/
+giovanni-ub@giovanni-on-ub:~/Desktop$ 			cd Vivado/2024.2/bin/
 giovanni-ub@giovanni-on-ub:~/Desktop/Vivado/2024.2/bin$ ./hw_server 
 
