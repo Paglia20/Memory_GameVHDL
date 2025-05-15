@@ -53,13 +53,13 @@ architecture Behavioral of control_unit is
   signal left_btn_hold      : integer range 0 to DELAY_CYCLES := 0;
   signal show_pattern_flag  : std_logic := '0';
   signal show_turns_flag    : std_logic := '0';
-  signal reset_game_flag    : std_logic := '0';
 
 begin
 
   process(clk, reset)
   begin
-    if reset = '1' or reset_game_flag = '1' then
+    if reset = '1' or left_btn_hold >= DELAY_CYCLES then
+      report "resetting!" severity note; 
       state             <= idle;
       level_reg         <= (others => '0');
       delay_counter     <= 0;
@@ -72,7 +72,6 @@ begin
       left_btn_hold     <= 0;
       show_pattern_flag <= '0';
       show_turns_flag   <= '0';
-      reset_game_flag <= '0';  
 
     elsif rising_edge(clk) then
       state <= next_state;
@@ -127,8 +126,6 @@ begin
         if left_btn = '1' then
           if left_btn_hold < DELAY_CYCLES then
             left_btn_hold <= left_btn_hold + 1;
-          else 
-            reset_game_flag <= '1';
           end if;
         else
           left_btn_hold <= 0;
@@ -224,7 +221,6 @@ begin
 
         if left_btn_hold >= DELAY_CYCLES then
           next_state <= idle;
-         -- reset_game_flag <= '1';
 
         elsif right_btn = '1' then
           next_state <= delay_after_clear;
@@ -249,6 +245,7 @@ begin
 
       when end_state =>
         led_mode <= "11";
+        report "Game completed!" severity note; 
     end case;
   end process;
 
