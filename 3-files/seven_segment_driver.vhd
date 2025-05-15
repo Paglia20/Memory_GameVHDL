@@ -4,7 +4,7 @@ USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY seven_segment_driver IS
   GENERIC (
-    size : INTEGER := 20  -- Adjust as needed to control refresh rate
+    size : INTEGER := 20  
   );
   PORT (
     clock  : IN STD_LOGIC;
@@ -25,7 +25,7 @@ END ENTITY seven_segment_driver;
 ARCHITECTURE Behavioral OF seven_segment_driver IS
 
   SIGNAL flick_counter : unsigned(size - 1 DOWNTO 0);
-  SIGNAL sel           : std_logic_vector(2 DOWNTO 0); -- 3-bit selector for 8 digits
+  SIGNAL sel           : std_logic_vector(2 DOWNTO 0); 
   SIGNAL digit         : STD_LOGIC_VECTOR(3 DOWNTO 0);
   SIGNAL cathodes      : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
@@ -39,7 +39,7 @@ BEGIN
       sel <= (OTHERS => '0');
     ELSIF rising_edge(clock) THEN
       flick_counter <= flick_counter + 1;
-      sel <= std_logic_vector(flick_counter(size - 1 DOWNTO size - 3)); -- top 3 bits for 8 digits
+      sel <= std_logic_vector(flick_counter(size - 1 DOWNTO size - 3)); 
     END IF;
   END PROCESS;
 
@@ -67,7 +67,7 @@ BEGIN
       digit6 WHEN "110",
       digit7 WHEN OTHERS;
 
-  -- Decode the digit to 7-segment (CA is active low)
+  -- Decode the digit to 7-segment
   WITH digit SELECT
     cathodes <=
       "11000000" WHEN "0000",  -- 0

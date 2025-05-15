@@ -20,7 +20,7 @@ entity control_unit is
     repeat_level       : in  std_logic;
     all_switches_down  : in  std_logic;
     timer_expired      : in  std_logic;
-    level              : out std_logic_vector(2 downto 0); -- up to 5 levels
+    level              : out std_logic_vector(2 downto 0); 
     ones_count         : out std_logic_vector(3 downto 0);
     enable_patt        : out std_logic;
     start_compare      : out std_logic;
@@ -42,7 +42,7 @@ architecture Behavioral of control_unit is
 
   signal state              : state_type := idle;
   signal next_state         : state_type;
-  signal level_reg          : std_logic_vector(2 downto 0) := (others => '0'); -- 3 bits
+  signal level_reg          : std_logic_vector(2 downto 0) := (others => '0'); 
   signal delay_counter      : integer range 0 to DELAY_CYCLES := 0;
   signal ones_count_reg     : std_logic_vector(3 downto 0) := (others => '0');
   signal level_up_reg       : std_logic := '0';
@@ -103,7 +103,7 @@ begin
       end if;
 
       if state = check_score and level_up_reg = '1' then
-        if unsigned(level_reg) < 5 then -- max level = 4 (5 total)
+        if unsigned(level_reg) < 5 then 
           level_reg <= std_logic_vector(unsigned(level_reg) + 1);
         end if;
       end if;
@@ -147,7 +147,7 @@ begin
     turns_enable   <= '0';
     timer_enable   <= '0';
 
-    led_mode       <= "00"; -- Default: all off
+    led_mode       <= "00"; 
 
     case state is
       when idle =>
@@ -195,7 +195,7 @@ begin
         end if;
 
       when wait_switches_down =>
-        led_mode <= "10"; -- all on
+        led_mode <= "10";
         if switches_down_reg = '1' then
           next_state <= menu_actions;
         end if;

@@ -9,13 +9,13 @@ entity datapath is
   port (
     clk          : in  std_logic;
     reset        : in  std_logic;
-    start_compare: in  std_logic;  -- segnale per iniziare confronto
-    level        : in  std_logic_vector(2 downto 0); -- 2-bit: 00=liv1, 01=liv2, 10=liv3
+    start_compare: in  std_logic;  
+    level        : in  std_logic_vector(2 downto 0); -- 2-bit: 00=liv1, 01=liv2, 10=liv3, 011 = LVL4, 100= LVL5
     pattern_in   : in  std_logic_vector(15 downto 0);
     switches     : in  std_logic_vector(15 downto 0);
-    timer_enable : in  std_logic;  -- segnale per iniziare timer
+    timer_enable : in  std_logic; 
     score        : out std_logic_vector(3 downto 0);
-    score_valid  : out std_logic;  -- 1 clock dopo il confronto
+    score_valid  : out std_logic;  
     turns        : out std_logic_vector(3 downto 0);
     timer        : out std_logic_vector(3 downto 0);
     level_up     : out std_logic;
@@ -73,13 +73,11 @@ begin
             switches_reg <= switches;
             bit_index    <= 0;
             temp_score   <= 0;
-           -- score_reg    <= 0;
             state        <= compare;
           end if;
 
 
         when compare =>
-          -- confronto singolo bit per ciclo
           if pattern_reg(bit_index) = '1' and switches_reg(bit_index) = '1' then
             temp_score <= temp_score + 1;
           elsif pattern_reg(bit_index) = '0' and switches_reg(bit_index) = '1' then
@@ -94,14 +92,12 @@ begin
             bit_index <= bit_index + 1;
           end if;
               
-        --This guarantees that the final result from the last bit comparison is registered and visible when used.
         when score_calculated =>
           state <= done;
 
         when done =>
             new_score := score_reg + temp_score;
 
-            -- clamp e aggiornamento
             if new_score < 0 then
               score_reg <= 0;
               level_up_int <= '0';
@@ -127,7 +123,6 @@ begin
       -- Countdown timer logic
       if timer_enable = '1' then
         if timer_reg = 0 then
-          -- Timer already expired, do nothing
           timer_expired_int <= '0';
         elsif delay_counter = DELAY_CYCLES then
           delay_counter <= 0;
@@ -146,7 +141,7 @@ begin
           
       else
         if level = "011" then 
-        timer_reg <= 10;         -- reset when disabled
+        timer_reg <= 10;        
         else 
         timer_reg <= 5;
         end if;

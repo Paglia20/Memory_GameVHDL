@@ -4,16 +4,16 @@ USE ieee.numeric_std.ALL;
 
 entity pattern_generator is
   GENERIC (
-    LED_COUNT  : integer := 16;  -- larghezza del pattern
-    CNT_WIDTH  : integer := 4    -- bit per rappresentare ones_count (0..8)
+    LED_COUNT  : integer := 16; 
+    CNT_WIDTH  : integer := 4    
   );
   PORT (
     clk        : IN  std_logic;
-    reset      : IN  std_logic;                                -- attivo alto
-    enable     : IN  std_logic;                                -- genera nuovo pattern quando 1
-    ones_count : IN  std_logic_vector(CNT_WIDTH-1 DOWNTO 0);   -- quanti 1 inserire (0..8)
-    pattern    : OUT std_logic_vector(LED_COUNT-1 DOWNTO 0);   -- risultato
-    done       : OUT std_logic                                 -- sale a '1' quando pronto
+    reset      : IN  std_logic;                                
+    enable     : IN  std_logic;                                
+    ones_count : IN  std_logic_vector(CNT_WIDTH-1 DOWNTO 0);   
+    pattern    : OUT std_logic_vector(LED_COUNT-1 DOWNTO 0);   
+    done       : OUT std_logic                                 
   );
 end entity pattern_generator;
 
@@ -64,7 +64,6 @@ begin
         when idle =>
           done_int <= '0';
           if enable = '1' then
-            -- Clamp ones_count
             if unsigned(ones_count) > LED_COUNT then
               target_cnt <= LED_COUNT;
             else

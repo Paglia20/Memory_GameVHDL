@@ -66,10 +66,8 @@ architecture Behavioral of main is
   signal busy_timer  : std_logic;
 
 
-  -- All switches down
   signal all_switches_down_s : std_logic;
 
-  -- Extended level
   signal extended_level : std_logic_vector(3 downto 0);
   signal turns_display : std_logic_vector(3 downto 0);
   signal timer_display : std_logic_vector(3 downto 0);
@@ -99,7 +97,7 @@ begin
 
   extended_level<= "0" & level;
   
-  res_n <= not reset;
+  res_n <= '1' when (reset = '0' or left_btn_hold >= main_DELAY_CYCLES) ELSE '0';
   
   turns_display <= turns when turns_enable = '1' else zero_bcd;
   timer_display <= timer when timer_enable = '1' else zero_bcd;
@@ -125,26 +123,22 @@ begin
     if btn_left = '1' then
        if left_btn_hold < main_DELAY_CYCLES then
           left_btn_hold <= left_btn_hold + 1;
-       else 
-       res_n <= '1';
        end if;
     else
        left_btn_hold <= 0;
-       res_n <= '0';
     end if;
 
 
     if led_mode = "11" then
       if wave_counter = 10000000 then 
           wave_counter <= 0;
-          -- Rotate left by 1
           wave_pattern <= wave_pattern(14 downto 0) & wave_pattern(15);
       else
           wave_counter <= wave_counter + 1;
       end if;
       else
           wave_counter <= 0;
-          wave_pattern <= "0000000000001111"; -- reset when not in win state
+          wave_pattern <= "0000000000001111";
       end if;
     end if;
 
