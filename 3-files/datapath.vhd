@@ -52,6 +52,7 @@ begin
     if reset = '1' then
       state        <= idle;
       score_reg    <= 0;
+      turns_reg    <= 0;
       score_valid_int  <= '0';
       pattern_reg  <= (others => '0');
       switches_reg <= (others => '0');
