@@ -14,7 +14,7 @@ ARCHITECTURE behavior OF tb_binary_to_bcd IS
     );
     PORT (
       clk     : IN  STD_LOGIC;
-      reset   : IN  STD_LOGIC; -- cambiato reset_n -> reset
+      reset   : IN  STD_LOGIC; 
       ena     : IN  STD_LOGIC;
       binary  : IN  STD_LOGIC_VECTOR(bits - 1 DOWNTO 0);
       bcd     : OUT STD_LOGIC_VECTOR(digits * 4 - 1 DOWNTO 0);
@@ -24,7 +24,7 @@ ARCHITECTURE behavior OF tb_binary_to_bcd IS
 
   -- Clock
   SIGNAL clk        : STD_LOGIC := '0';
-  SIGNAL reset      : STD_LOGIC := '0'; -- cambiato reset_n -> reset
+  SIGNAL reset      : STD_LOGIC := '0'; 
 
   -- Lvl
   SIGNAL level_ena      : STD_LOGIC := '0';
@@ -84,7 +84,7 @@ BEGIN
       busy    => score_busy
     );
 
-  -- Stimulus
+
   stim_proc: PROCESS
   BEGIN
     -- Reset
@@ -97,14 +97,14 @@ BEGIN
     level_binary  <= "0001";  
     score_binary  <= "1001";  
 
-    -- Attiva entrambi
+
     level_ena <= '1';
     score_ena <= '1';
     WAIT FOR clk_period;
     level_ena <= '0';
     score_ena <= '0';
 
-    -- Aspetta che abbiano finito
+
     WAIT UNTIL level_busy = '0' AND score_busy = '0';
     WAIT FOR 100 ns;
 
