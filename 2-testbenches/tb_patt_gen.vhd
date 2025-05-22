@@ -73,18 +73,15 @@ BEGIN
     reset_tb <= '0';
     WAIT FOR 50 ns;
 
-    -- Loop over values 6..8 for ones_count
+
     FOR i IN 6 TO 8 LOOP
-      -- setta numero di 1
       ones_count_tb <= std_logic_vector(to_unsigned(i, CNT_WIDTH));
-      -- generate new pattern
       enable_tb <= '1';
       WAIT FOR clk_period;
       enable_tb <= '0';
 
-      -- aspetta la fine (done_tb = '1')
       WAIT UNTIL done_tb = '1';
-      WAIT FOR 200 ns; -- lascia un po’ di tempo per osservare
+      WAIT FOR 200 ns;
     END LOOP;
 
     -- Fine simulazione
