@@ -88,16 +88,16 @@ begin
         reset_tb <= '0';
         wait for 20 ns;
     
-        -- Inizio gioco (center button premuto)
+
         center_btn_tb <= '1';
         wait for clk_period;
         center_btn_tb <= '0';
     
-        -- Aspetta che venga abilitato il generatore pattern
+
         wait until enable_patt_tb = '1';
         wait for clk_period;
     
-        -- Simula fine generazione pattern
+
         done_patt_tb <= '1';
         wait for clk_period;
         done_patt_tb <= '0';
@@ -108,15 +108,15 @@ begin
         wait for 2*clk_period;
         center_btn_tb <= '0';
     
-        -- Aspetta che parta il confronto
+
         wait until start_compare_tb = '1';
         wait for clk_period;
         score_valid_tb <= '1';
 
         -- Level Up Check         **(happens while score_valid is true in datapath)**
 
-         level_up_tb <= '1'; -- normalmente arriva repeat level ma ora testiamo level up
-         wait for 2*clk_period; -- almeno 2 clock! altrimenti la control unit non recepisce!
+         level_up_tb <= '1';
+         wait for 2*clk_period; 
          level_up_tb <= '0';
 
 
@@ -129,7 +129,7 @@ begin
 
         score_valid_tb <= '0';
     
-        -- Simula che il giocatore ha abbassato gli switch
+
         wait for 30 ns;
         all_switches_down_tb <= '1';
         wait for 3 * clk_period;
@@ -149,7 +149,7 @@ begin
     assert false report "Timeout raggiunto (700ns). Simulazione interrotta." severity failure;
   end process;
 
-  -- Processo di monitoraggio dello stato
+  
   monitor_state_proc : process(clk_tb)
 begin
   if rising_edge(clk_tb) then
